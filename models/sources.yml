@@ -1,0 +1,12 @@
+version: 2
+
+sources:
+  - name: tpch_sf1
+    database: snowflake_sample_data
+    tables: 
+      - name: orders
+  - name: tpcds_sf100tcl
+    database: snowflake_sample_data
+    tables: 
+      - name: customer_demographics
+      - name: customer
