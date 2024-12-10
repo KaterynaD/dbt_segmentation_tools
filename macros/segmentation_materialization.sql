@@ -38,17 +38,30 @@
 
   {{ run_hooks(pre_hooks) }}
 
-  {% if segmentation_type == 'RFM' %}
+  {% if segmentation_type|upper == 'RFM' or  'SQL' in segmentation_type|upper %}
 
+     
 
       {% call statement('main', language='sql') -%}
-      {% set build_sql = RFM_sql(config = config, sql = compiled_code) %}
+
+      {% if segmentation_type|upper == 'RFM' %}
+
+       {% set build_sql = RFM_sql(config = config, sql = compiled_code) %}
+
+      {% else %}
+
+       {% set build_sql = context[segmentation_type](config = config, sql = compiled_code) %}      
+
+      {% endif %}
+
       {{ create_table_as(False, target_relation, build_sql, 'sql') }}
 
-  {%- endcall %}
+      {%- endcall %}
 
-  {%- else -%}
+    
 
+  {% elif segmentation_type|upper in ('Gaussian'|upper, 'KMeans'|upper, 'DBSCAN', 'AgglomerativeClustering'|upper) or  'PYTHON' in segmentation_type|upper  %}
+  
   
 
 
@@ -56,32 +69,26 @@
 
   {% call statement('main', language='python') -%}
 
-  {# set sql_compiled_code = "\"" ~ compiled_code| replace("\n"," ") | trim ~ "\""  #}
 
+  {% if segmentation_type|upper == 'KMeans'|upper %}
 
+   {% set python_compiled_code = KMeans_python(config = config, sql = compiled_code) %}
 
-  {%- if segmentation_type == 'KMeans' -%}
+  {% elif segmentation_type|upper == 'Gaussian'|upper %}
 
-  {% set python_compiled_code = KMeans_python(config = config, sql = compiled_code) %}
+   {% set python_compiled_code = Gaussian_python(config = config, sql = compiled_code) %}  
 
-  {%- elif segmentation_type == 'Gaussian' -%}
+  {% elif segmentation_type|upper == 'DBSCAN' %}
 
-  {% set python_compiled_code = Gaussian_python(config = config, sql = compiled_code) %}  
+   {% set python_compiled_code = DBSCAN_python(config = config, sql = compiled_code) %}
 
-  {%- elif segmentation_type == 'DBSCAN' -%}
+  {% elif segmentation_type|upper == 'AgglomerativeClustering'|upper %}
 
-  {% set python_compiled_code = DBSCAN_python(config = config, sql = compiled_code) %}
+   {% set python_compiled_code = AgglomerativeClustering_python(config = config, sql = compiled_code) %}
 
-  {%- elif segmentation_type == 'AgglomerativeClustering' -%}
+	{% else %}
 
-  {% set python_compiled_code = AgglomerativeClustering_python(config = config, sql = compiled_code) %}
-
-	{%- else -%}
-
-  {% set python_compiled_code = context[segmentation_type](config = config, sql = compiled_code) %}
-
-
-
+   {% set python_compiled_code = context[segmentation_type](config = config, sql = compiled_code) %}
 
   {% endif %}
 
@@ -93,6 +100,7 @@
   {{ create_table_as(False, target_relation, python_compiled_code, 'python') }}
 
   {%- endcall %}
+
   {% endif %}
   {{ run_hooks(post_hooks) }}
 
