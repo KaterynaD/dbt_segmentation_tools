@@ -46,7 +46,7 @@
 
       {% if segmentation_type|upper == 'RFM' %}
 
-       {% set build_sql = RFM_sql(config = config, sql = compiled_code) %}
+       {% set build_sql = dbt_segmentation_tools.RFM_sql(config = config, sql = compiled_code) %}
 
       {% else %}
 
@@ -72,19 +72,19 @@
 
   {% if segmentation_type|upper == 'KMeans'|upper %}
 
-   {% set python_compiled_code = KMeans_python(config = config, sql = compiled_code) %}
+   {% set python_compiled_code = dbt_segmentation_tools.KMeans_python(config = config, sql = compiled_code) %}
 
   {% elif segmentation_type|upper == 'Gaussian'|upper %}
 
-   {% set python_compiled_code = Gaussian_python(config = config, sql = compiled_code) %}  
+   {% set python_compiled_code = dbt_segmentation_tools.Gaussian_python(config = config, sql = compiled_code) %}  
 
   {% elif segmentation_type|upper == 'DBSCAN' %}
 
-   {% set python_compiled_code = DBSCAN_python(config = config, sql = compiled_code) %}
+   {% set python_compiled_code = dbt_segmentation_tools.DBSCAN_python(config = config, sql = compiled_code) %}
 
   {% elif segmentation_type|upper == 'AgglomerativeClustering'|upper %}
 
-   {% set python_compiled_code = AgglomerativeClustering_python(config = config, sql = compiled_code) %}
+   {% set python_compiled_code = dbt_segmentation_tools.AgglomerativeClustering_python(config = config, sql = compiled_code) %}
 
 	{% else %}
 

@@ -1,0 +1,22 @@
+name: 'integration_tests'
+version: '1.0.0'
+
+# This setting configures which "profile" dbt uses for this project.
+profile: 'integration_tests'
+
+
+model-paths: ["models"]
+seed-paths: ["seeds"]
+
+
+
+clean-targets:         # directories to be removed by `dbt clean`
+  - "target"
+  - "dbt_packages"
+
+
+# Configuring models
+
+seeds:  
+  integration_tests:  
+    +quote_columns: false

@@ -1,0 +1,196 @@
+version: 2
+sources:
+  - name: test
+    tables:
+      - name: orders
+        columns:
+          - name: O_CUSTKEY
+          - name: O_ORDERDATE
+          - name: O_TOTALPRICE
+      - name: data_for_clustering
+        columns:      
+          - name: O_CUSTKEY
+          - name: RECENCY
+          - name: FREQUENCY   
+          - name: MONETARY             
+      - name: customer_demo_data
+        columns:
+          - name: customer_id      
+          - name: age
+          - name: gender
+          - name: civil_status
+          - name: salary
+          - name: has_children
+          - name: purchaser_type    
+      - name: RFM_it_test_data
+        columns:
+          - name: O_CUSTKEY
+          - name: RECENCY
+          - name: FREQUENCY
+          - name: MONETARY
+          - name: MONETARY_AVG
+          - name: R           
+          - name: F  
+          - name: M  
+          - name: RFM  
+          - name: RFM_SEGMENT
+      - name: Kmeans_it_test_data
+        columns:
+          - name: O_CUSTKEY
+          - name: RECENCY
+          - name: FREQUENCY
+          - name: MONETARY
+          - name: KMEANS_SEGMENT
+      - name: Gaussian_it_test_data
+        columns:
+          - name: O_CUSTKEY
+          - name: RECENCY
+          - name: FREQUENCY
+          - name: MONETARY
+          - name: GGG_SEGMENT
+      - name: AgglomerativeClustering_it_test_data
+        columns:
+          - name: customer_id      
+          - name: age
+          - name: gender
+          - name: civil_status
+          - name: salary
+          - name: has_children
+          - name: purchaser_type           
+          - name: AGG_SEGMENT 
+      - name: DBSCAN_it_test_data
+        columns:
+          - name: customer_id      
+          - name: age
+          - name: gender
+          - name: civil_status
+          - name: salary
+          - name: has_children
+          - name: purchaser_type           
+          - name: DBSCAN_SEGMENT           
+
+models:
+  - name: RFM_it
+    config:
+      materialized: segmentation
+      segmentation_type: RFM
+      unique_key: o_custkey
+
+      orderdate: o_orderdate
+      ordertotal: o_totalprice
+      period_of_interest_in_days: 180      
+
+      segment_col_name: RFM_segment
+      segments: ['Champion','Loyal','Potential','Need Attention']
+      segments_limits: [9,8,6,0]
+      quintile: 5
+      method: +
+
+    description: "To test RFM Customer Segmentation"
+
+    tests:
+      - dbt_utils.equality:
+          compare_model: ref('RFM_it_test_data')
+          compare_columns:
+            - O_CUSTKEY
+            - RECENCY
+            - FREQUENCY
+            - MONETARY
+            - MONETARY_AVG
+            - R           
+            - F  
+            - M  
+            - RFM
+            - RFM_SEGMENT  
+          precision: 2                  
+
+  - name: Kmeans_it
+    config:
+      materialized: segmentation
+      segmentation_type: KMeans
+      unique_key: o_custkey
+      segment_col_name: KMeans_segment
+      n_clusters: 4      
+
+    description: "To test KMeans Customer Segmentation"
+    tests:
+      - dbt_utils.equality:
+          compare_model: ref('Kmeans_it_test_data')
+          compare_columns:
+            - O_CUSTKEY
+            - RECENCY
+            - FREQUENCY
+            - MONETARY 
+            - KMEANS_SEGMENT  
+          precision: 2   
+
+  - name: Gaussian_it
+    config:
+      materialized: segmentation
+      segmentation_type: Gaussian
+      unique_key: o_custkey
+      segment_col_name: GGG_segment
+      n_clusters: 4      
+
+    description: "To test Gaussian Customer Segmentation"
+    tests:
+      - dbt_utils.equality:
+          compare_model: ref('Gaussian_it_test_data')
+          compare_columns:
+            - O_CUSTKEY
+            - RECENCY
+            - FREQUENCY
+            - MONETARY 
+            - GGG_SEGMENT  
+          precision: 2    
+
+  - name: AgglomerativeClustering_it
+    config:
+      materialized: segmentation
+      segmentation_type: AgglomerativeClustering
+      unique_key: customer_id
+      segment_col_name: AGG_segment
+      n_clusters: 4      
+
+      imports: ['@control_db.external_stages.my_python_library/gower.zip']                
+
+    description: "To test AgglomerativeClustering Customer Segmentation (categorical and numerical mix of data)"
+    tests:
+      - dbt_utils.equality:
+          compare_model: ref('AgglomerativeClustering_it_test_data')
+          compare_columns:
+            - customer_id
+            - age
+            - gender
+            - civil_status
+            - salary
+            - has_children
+            - purchaser_type           
+            - AGG_SEGMENT   
+          precision: 2          
+
+  - name: DBSCAN_it
+    config:
+      materialized: segmentation
+      segmentation_type: DBSCAN
+      unique_key: customer_id
+      segment_col_name: DBSCAN_segment
+      eps: 0.3
+      min_samples: 2  
+
+      imports: ['@control_db.external_stages.my_python_library/gower.zip']                
+
+    description: "To test DBSCAN Customer Segmentation (categorical and numerical mix of data)"             
+    tests:
+      - dbt_utils.equality:
+          compare_model: ref('DBSCAN_it_test_data')
+          compare_columns:
+            - customer_id
+            - age
+            - gender
+            - civil_status
+            - salary
+            - has_children
+            - purchaser_type           
+            - DBSCAN_SEGMENT   
+          precision: 2 
