@@ -2,7 +2,7 @@
 
 This dbt package provides a materialization that segments customers or any other entities.
 
-It builds SQL or Python (Snowpark) transformation from SQL dbt model. Basically, you provide your own custom SQL in dbt SQL model, configure a segmentation type and the package compiles the SQL, and creates a dbt SQL or Python model which is run in a usual dbt workflow. SQL can contains ref() or source() or other macros. Its compiled before running in the final Python model.
+It builds SQL or Python (Snowpark) transformation from SQL dbt model. Basically, you provide your own custom SQL in dbt SQL model, configure a segmentation type and the package compiles the SQL, and creates a dbt SQL or Python model which is run in a usual dbt workflow. SQL can contains ref() or source() or other macros. It's compiled before running in the final Python model.
 
 This is a lightweight approach designated for automated processing relatively small and simple data batches without complex feature preprocessing. It can be used to apply a segmentation algorithm on a full data set. 
 
@@ -254,7 +254,7 @@ from {{ ref('RFM') }}
 
 DBSCAN requires **eps** and **min_samples**. Metric parameter is 'precomputed' because the package uses Gower distance matrix. See more details in scikit-learn DBSCAN documentation. This algorithm requires a lot of tuning because in most cases you will get 1 cluster or 1 large cluster and few more tiny clusters.
 
-Make sure you have **gower.zip** available in a Snowflake stage.
+Make sure you have **gower.zip** available in a Snowflake stage.
 
 Start experiments from tiny datasets, no more than 1000 records. It accepts varchar and numerical columns in SQL.
 
@@ -303,7 +303,7 @@ This algorithm also accepts varchar and numerical columns but does not require t
 
 You need to provide only **n_clusters** and can try different **linkage** parameter values (average by default). Metric parameter is 'precomputed' because the package uses Gower distance matrix. See more details in scikit-learn AgglomerativeClustering documentation.
 
-Make sure you have **gower.zip** available in a Snowflake stage.
+Make sure you have **gower.zip** available in a Snowflake stage.
 
 Start experiments from tiny datasets, no more than 1000 records.
 
@@ -333,9 +333,9 @@ n_clusters = 5
 
 You can create your own macro with any name and use it in **segmentation_type** parameter:
 
-If a macro creates SQL code, the name must contain **SQL**.
+If a macro creates SQL code, the name must contain **SQL**.
 
-For Python macro, the name must contain **Python** and the macro defines Python model function.
+For Python macro, the name must contain **Python** and the macro defines Python model function.
 
 SQL custom segmentation type:
 
@@ -439,7 +439,7 @@ dbt run
 
 What makes the package interesting from the dbt programming point of view is how I compile the final dbt model into SQL or Python.
 
-Dbt makes a choice base on the model file extension - sql or py
+Dbt makes a choice base on the model file extension - sql or py.
 
 I use segmentation_type:
 
@@ -544,4 +544,4 @@ The target tables contain all columns from the initial SQL dbt model plus a Segm
 
 To demo DBSCAN and AgglomerativeClustering I used sample 1000 rows from tpcds_sf100tcl.customer and tpcds_sf100tcl. customer_demographics tables from snowflake_sample_data database.
 
-Because the data are synthetic, demographic data has the same number of samples in each categorical feature. The data is not clustered well. In RFM_and_Demographics notebook, I artificially change the data to get more distinguishable clusters. It did not help a lot. With few categorical features and 1 numerical, DBSCAN tries to create as many clusters as there are combinations of values in categorical columns. If there are manageable number of segments, there are always 1 large, and 1 or few tiny-tiny.
+Because the data are synthetic, demographic data has the same number of samples in each categorical feature. The data is not clustered well. In RFM_and_Demographics notebook, I artificially change the data to get more distinguishable clusters. It did not help a lot. With few categorical features and 1 numerical, DBSCAN tries to create as many clusters as there are combinations of values in categorical columns. If there are manageable number of segments, there are always 1 large, and 1 or few tiny-tiny.
