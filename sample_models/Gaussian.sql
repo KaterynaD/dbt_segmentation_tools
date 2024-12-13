@@ -2,11 +2,9 @@
 
     materialized='segmentation',
     segmentation_type='Gaussian',
-    unique_key = 'o_custkey',   
-    model_name = 'GMM_Customer_Segmentation',
-    model_version = 'SOUR_FIREANT_3',    
-    model_database='CONTROL_DB',
-    model_schema='MODELS'
+    unique_key = 'o_custkey',
+    n_components= 4   
+
     ) }}
 
 
