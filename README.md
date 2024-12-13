@@ -2,7 +2,7 @@
 
 This dbt package provides a materialization that segments customers or any other entities.
 
-It builds SQL or Python (Snowpark) transformation from SQL dbt model. Basically, you provide your own custom SQL in dbt SQL model, configure a segmentation type and the package compiles the SQL, and creates a dbt SQL or Python model which is run in a usual dbt workflow. SQL can contains ref() or source() or other macros. It's compiled before running in the final Python model.
+It builds SQL or Python (Snowpark) transformation from SQL dbt model. Basically, you provide your own custom SQL in dbt SQL model, configure a segmentation type and the package compiles the SQL, and creates a dbt SQL or Python model which is run in a usual dbt workflow. SQL can contains ref() or source() or other macros. It's compiled before running in the final Python model.
 
 This is a lightweight approach designated for automated processing relatively small and simple data batches without complex feature preprocessing. It can be used to apply a segmentation algorithm on a full data set. 
 
